@@ -18,7 +18,7 @@ app.use(cookieParser())
 app.use('/api', route)
 
 app.get('/test',(req,res)=>{
-    res.end('Api Test Endpoint 02')
+    res.end('Api Version : v.2.0.1')
 })
 
 app.use((err,req,res,next)=>{

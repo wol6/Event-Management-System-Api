@@ -30,8 +30,8 @@ route.get('/get-attendee', verifyToken, viewAttendees)
 route.get('/get-user-events', verifyToken, userEvents)
 
 // route.post('/payment/create-order', verifyToken, createOrder)
-route.post('/payment/create-order', createOrder)
-route.post('/payment/verify', verifyPayment)
+// route.post('/payment/create-order', createOrder)
+route.post('/payment/verify', verifyToken,verifyPayment)
 
 
 export default route
