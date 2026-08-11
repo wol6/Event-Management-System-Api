@@ -18,8 +18,24 @@ const regEventSchema = new mongoose.Schema(
     headCount: {
       type: Number,
       required: true,
-      default:0
+      default: 0
     },
+    paymentStatus: {
+      type: String,
+      default:''
+    },
+    bookingStatus: {
+      type: String,
+    },
+    razorpayOrderId: {
+      type: String,
+    },
+    razorpayPaymentId: {
+      type: String,
+    },
+    totalAmt:{
+      type:Number
+    }
   },
   {
     timestamps: true,

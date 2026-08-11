@@ -18,7 +18,7 @@ app.use(cookieParser())
 app.use('/api', route)
 
 app.get('/test',(req,res)=>{
-    res.end('Api Test Endpoint 01')
+    res.end('Api Test Endpoint 02')
 })
 
 app.use((err,req,res,next)=>{

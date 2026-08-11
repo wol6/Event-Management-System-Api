@@ -1,34 +1,59 @@
 import mongoose, { startSession } from "mongoose"
 import RegEvent from "../../schema/registrations .js"
 import EventModel from "../../schema/event.js"
+import { createOrder } from "../payment/payment.js"
 
 
 export const regAttendee = async (req, res) => {
     //start session
     const session = await mongoose.startSession()
     try {
-        // start transaction
-        session.startTransaction()
+
+        const userid = req.user.id
 
         const eventid = req.body.id
-        const userid = req.user.id
         const seatNos = req.body.seatNos || []
-        const headCount = Number(req.body.count || seatNos.length)
+        const headCount = Number(req.body.headCount || seatNos.length)
 
-        console.log('non seat reg')
+        console.log('seat reg')
 
         if (!eventid) {
-            //rollback
-            await session.abortTransaction()
             return res.status(400).json({
-                message: "Event ID is required to register."
+                message: "Event ID is required to register"
             })
         }
 
-        //pass session lock doc
+        const crtEvent = await EventModel.findById(eventid).lean()
+
+        if (!crtEvent) {
+            return res.status(404).json({
+                message: "Event not foundr"
+            })
+        }
+
+        const isPaid = crtEvent.isPaid
+        const totalAmount = crtEvent.amount * headCount
+        let razorpayOrder = null
+
+        if (isPaid) {
+            razorpayOrder = await createOrder(totalAmount)
+        }
+
+        // start transaction
+        session.startTransaction()
+
         const event = await EventModel.findById(eventid).session(session)
 
-        if (event.booked >= event.capacity) {
+        if (!event) {
+            //rollback
+            await session.abortTransaction()
+            return res.status(400).json({
+                message: "Event not found"
+            })
+        }
+
+
+        if (event.booked + headCount >= event.capacity) {
             //rollback
             await session.abortTransaction()
             return res.status(400).json({ message: "This event is completely sold out" });
@@ -39,7 +64,7 @@ export const regAttendee = async (req, res) => {
         const filter = { $inc: { booked: seatCount } }
 
         if (seatNos.length > 0) {
-            const seatConflict = await EventModel.findOne({ _id: eventid, bookedArr: { $in: { seatNos } } })
+            const seatConflict = await EventModel.findOne({ _id: eventid, bookedArr: { $in: seatNos } })
                 .session(session)
             if (seatConflict) {
                 //rollback
@@ -51,14 +76,22 @@ export const regAttendee = async (req, res) => {
 
         await EventModel.findByIdAndUpdate(eventid, filter, { session })
 
-        await RegEvent.create([{ event: eventid, user: userid, seatNos, headCount }], { session })
+        await RegEvent.create([{
+            event: eventid, user: userid, seatNos, headCount,
+            bookingStatus: isPaid ? "pending" : "confirmed",
+            paymentStatus: isPaid ? "pending" : "not-required",
+            totalAmt: totalAmount, razorpayOrderId: razorpayOrder?.id ?? ''
+
+        }], { session })
 
         //commit
         await session.commitTransaction()
 
         return res.status(200).json({
             success: true,
-            message: "Registered Successfully"
+            message: "Registered Successfully",
+            isPaid,
+            razorpayOrder
         })
     } catch (err) {
         //rollback
@@ -69,6 +102,7 @@ export const regAttendee = async (req, res) => {
         session.endSession()
     }
 }
+
 
 export const viewAttendees = async (req, res) => {
     try {
