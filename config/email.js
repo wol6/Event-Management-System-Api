@@ -6,7 +6,7 @@ const emailBaseUrl = process.env.BACKENDURL
 
 
 const emailTransporter = nodemailer.createTransport({
-    host: '://gmail.com',
+    host: 'smtp.gmail.com',
     port: 465,
     secure: true, // Use SSL
     auth: {
