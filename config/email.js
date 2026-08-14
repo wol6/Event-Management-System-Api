@@ -5,15 +5,20 @@ import nodemailer from 'nodemailer'
 const emailBaseUrl = process.env.BACKENDURL
 
 const emailTransporter = nodemailer.createTransport({
-    service: "smtp.gmail.com",
-    port: 587,
-    secure: false,
+    service: "gmail",
     auth: {
         user: process.env.OWNEREMAIL,
         pass: process.env.GMAILPASS
     }
 })
 
+emailTransporter.verify((error, success) => {
+    if (error) {
+        console.error("SMTP ERROR:", error);
+    } else {
+        console.log("SMTP READY:", success);
+    }
+})
 
 
 export async function sendAdminEmail(name, email) {
