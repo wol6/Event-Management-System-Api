@@ -1,6 +1,7 @@
 import dotenv from "dotenv"
 dotenv.config()
 import nodemailer from 'nodemailer'
+import { resendEmailSender } from "./resend.js"
 
 const emailBaseUrl = process.env.BACKENDURL
 
@@ -69,12 +70,13 @@ export async function sendAdminEmail(name, email) {
 `
     try {
 
-        await emailTransporter.sendMail({
-            from: email, //user
-            to: "alwynmathew007@gmail.com",//admin
-            subject: "Admin Approval Request",
-            html: htmlString
-        })
+        // await emailTransporter.sendMail({
+        //     from: email, //user
+        //     to: "alwynmathew007@gmail.com",//admin
+        //     subject: "Admin Approval Request",
+        //     html: htmlString
+        // })
+        await resendEmailSender('Admin Approval Request', htmlString)
         console.log('admin email sent')
 
     } catch (err) {

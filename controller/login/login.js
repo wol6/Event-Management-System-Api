@@ -26,7 +26,7 @@ export const signUp = async (req, res) => {
             // isAdmin: isAdmin || false, 
         })
 
-        sendVerifyEmail(name, email)
+        // sendVerifyEmail(name, email)
 
         // if is admin call function to send mail 
         if (isAdmin) {
