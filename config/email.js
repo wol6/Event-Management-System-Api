@@ -1,20 +1,12 @@
 import dotenv from "dotenv"
-import dns from 'node:dns/promises'
 dotenv.config()
 import nodemailer from 'nodemailer'
 
 const emailBaseUrl = process.env.BACKENDURL
 
-const { address } = await dns.lookup('smtp.gmail.com', { family: 4 })
 
 const emailTransporter = nodemailer.createTransport({
-    host: address,          // literal IPv4, DNS resolution now happens once, here
-    port: 587,
-    secure: false,
-    requireTLS: true,
-    tls: {
-        servername: 'smtp.gmail.com'  // required so TLS cert validation still passes against the real hostname
-    },
+    service:'gmail',
     auth: {
         user: process.env.OWNEREMAIL,
         pass: process.env.GMAILPASS
