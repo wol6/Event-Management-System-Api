@@ -1,4 +1,5 @@
 import dotenv from "dotenv"
+import dns from 'node:dns'
 dotenv.config()
 import nodemailer from 'nodemailer'
 
@@ -8,7 +9,9 @@ const emailTransporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
     secure: false,
-    family: 4,
+    lookup: (hostname, options, callback) => {
+        dns.lookup(hostname, { family: 4 }, callback);
+    },
     auth: {
         user: process.env.OWNEREMAIL,
         pass: process.env.GMAILPASS
