@@ -5,7 +5,8 @@ import nodemailer from 'nodemailer'
 const emailBaseUrl = process.env.BACKENDURL
 
 const emailTransporter = nodemailer.createTransport({
-    service: "gmail",
+    port: 587,
+    secure: false,
     auth: {
         user: process.env.OWNEREMAIL,
         pass: process.env.GMAILPASS
@@ -148,5 +149,8 @@ export async function sendVerifyEmail(name, email) {
 
     } catch (err) {
         console.log(err)
+        return res.status(500).json({
+            message: "Failed to send email"
+        });
     }
 }
