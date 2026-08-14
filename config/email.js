@@ -6,11 +6,14 @@ const emailBaseUrl = process.env.BACKENDURL
 
 
 const emailTransporter = nodemailer.createTransport({
-    service:'gmail',
+    host: '://gmail.com',
+    port: 465,
+    secure: true, // Use SSL
     auth: {
         user: process.env.OWNEREMAIL,
         pass: process.env.GMAILPASS
-    }
+    },
+    family: 4 // Forces Node to use IPv4 instead of IPv6
 })
 
 
@@ -137,7 +140,7 @@ export async function sendVerifyEmail(name, email) {
 
 </div>
 `;
-
+        console.log('emailing...')
         await emailTransporter.sendMail({
             from: 'donotreply@test.com', //admin
             to: email,//user
