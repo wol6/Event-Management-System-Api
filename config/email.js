@@ -9,20 +9,12 @@ const emailTransporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
     secure: false,
-    lookup: (hostname, options, callback) => {
-        dns.lookup(hostname, { family: 4 }, callback);
-    },
     auth: {
         user: process.env.OWNEREMAIL,
         pass: process.env.GMAILPASS
-    }
-})
-
-emailTransporter.verify((error, success) => {
-    if (error) {
-        console.error("SMTP ERROR:", error);
-    } else {
-        console.log("SMTP READY:", success);
+    },
+      lookup: (hostname, options, callback) => {
+        dns.lookup(hostname, { family: 4 }, callback);
     }
 })
 
