@@ -5,7 +5,7 @@ import nodemailer from 'nodemailer'
 const emailBaseUrl = process.env.BACKENDURL
 
 const emailTransporter = nodemailer.createTransport({
-    service: "gmail",
+    service: "smtp.gmail.com",
     port: 587,
     secure: false,
     auth: {
