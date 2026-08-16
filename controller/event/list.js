@@ -45,10 +45,15 @@ export const eventList = async (req, res) => {
 
 export const exploreList = async (req, res) => {
     try {
-        const {pageNo,limit,search} = req.query
+        const { pageNo, limit, search } = req.query
+        let filter = {}
 
-        const list = await EventModel.find().skip(pageNo*limit)
-        .limit(limit).sort({date:1}).lean()
+        if (search) {
+            filter = { title: { $regex: search, $options: "i" } }
+        }
+
+        const list = await EventModel.find(filter).skip(pageNo * limit)
+            .limit(limit).sort({ date: 1 }).lean()
         const totalPgCount = await EventModel.countDocuments()
 
 
