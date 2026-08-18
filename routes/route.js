@@ -1,6 +1,6 @@
 import express from "express"
 import { logout, signIn, signUp } from "../controller/login/login.js"
-import { verifyToken } from "../middleware/auth.js"
+import { adminAccess, verifyToken } from "../middleware/auth.js"
 import { createEvent, deleteEvent, updateEvent } from "../controller/event/event.js"
 import { eventList, exploreList } from "../controller/event/list.js"
 import { regAttendee, viewAttendees } from "../controller/event/registerevent.js"
@@ -19,10 +19,12 @@ route.get('/explore-events',exploreList)
 route.get('/email/verify/:email', verifyEmail)
 route.get('/admin/approve/:email', adminApproval)
 
-route.post('/add-event', verifyToken, createEvent)
-route.put('/update-event/:id', verifyToken, updateEvent)
+//admin
+route.post('/add-event', verifyToken,adminAccess, createEvent)
+route.put('/update-event/:id', verifyToken,adminAccess, updateEvent)
+route.delete('/delete-event/:id', verifyToken, adminAccess,deleteEvent)
+//admin and users
 route.get('/show-event', verifyToken, eventList)
-route.delete('/delete-event/:id', verifyToken, deleteEvent)
 
 // route.post('/open-reservation', verifyToken, regAttendee)
 route.post('/reserve-seat', verifyToken, regAttendee)
